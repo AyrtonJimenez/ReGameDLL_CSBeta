@@ -1,0 +1,86 @@
+#ifndef FUNC_BREAK_H
+#define FUNC_BREAK_H
+
+typedef enum { expRandom, expDirected} Explosions;
+
+typedef enum { matGlass = 0, matWood, matMetal, matFlesh, matCinderBlock, matCeilingTile, matComputer, matUnbreakableGlass, matRocks, matNone, matLastMaterial } Materials;
+
+#define	NUM_SHARDS 6 
+
+class CBreakable : public CBaseDelay
+{
+public:
+	
+	void Spawn( void );
+	
+	void Restart( void );
+	
+	void Precache( void );
+	
+	void KeyValue( KeyValueData* pkvd);
+	
+	void EXPORT BreakTouch( CBaseEntity *pOther );
+	
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	
+	void DamageSound( void );
+
+	virtual int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
+	
+	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType );
+
+	BOOL IsBreakable( void );
+	
+	BOOL SparkWhenHit( void );
+
+	int	 DamageDecal( int bitsDamageType );
+
+	void EXPORT		Die( void );
+	
+	virtual int		ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	
+	virtual int		Save( CSave &save );
+	
+	virtual int		Restore( CRestore &restore );
+
+	inline BOOL		Explodable( void ) { return ExplosionMagnitude() > 0; }
+	
+	inline int		ExplosionMagnitude( void ) { return pev->impulse; }
+	
+	inline void		ExplosionSetMagnitude( int magnitude ) { pev->impulse = magnitude; }
+
+	static void MaterialSoundPrecache( Materials precacheMaterial );
+	
+	static void MaterialSoundRandom( edict_t *pEdict, Materials soundMaterial, float volume );
+	
+	static const char **MaterialSoundList( Materials precacheMaterial, int &soundCount );
+
+	static const char *pSoundsWood[];
+	
+	static const char *pSoundsFlesh[];
+	
+	static const char *pSoundsGlass[];
+	
+	static const char *pSoundsMetal[];
+	
+	static const char *pSoundsConcrete[];
+	
+	static const char *pSpawnObjects[];
+
+	static	TYPEDESCRIPTION m_SaveData[];
+
+	Materials	m_Material;
+	
+	Explosions	m_Explosion;
+	
+	int			m_idShard;
+	
+	float		m_angle;
+	
+	int			m_iszGibModel;
+	
+	int			m_iszSpawnObject;
+};
+
+#endif	
+
